@@ -1,0 +1,87 @@
+IDLE RPM
+
+Idle RPM is an idle/clicker racing game inspired by Cookie Clicker, built for players who want something fun to grind in short bursts without committing hours to a full playthrough.
+Upgrade your car, enter increasingly competitive races, and climb the motorsport ladder from grassroots leagues all the way to Formula 1.
+------------------------------------------------
+Problem Description
+
+Many players have free time but don’t want to start a large, time consuming game. They want something engaging, rewarding, and easy to jump in and out of.
+Idle RPM solves this by combining idle progression with active clicking and racing strategy.
+------------------------------------------------
+Target Audience
+
+Casual gamers
+Fans of idle games
+Racing and car enthusiasts
+Players who enjoy progression and upgrades
+------------------------------------------------
+Core Features
+
+Click & Idle System – Earn money actively by clicking or passively over time
+Car Upgrades – Improve engine, powertrain, aerodynamics, frame, tires, and more
+Multiple Race Types – Drag, Stock, GT, Formula, Rally, and more
+Progression System – Advance through leagues (F3 → F2 → F1)
+Achievements – Unlock milestones and rewards
+Multiplayer Races – Race against friends
+User Accounts – Signup/login system with saved progress
+Visual Race Animations – Animated race scenes
+------------------------------------------------
+Stretch Goals
+
+Prestige/reset system for long‑term progression
+Multiple cars with unique strengths and weaknesses
+Offline earnings while logged out
+------------------------------------------------
+Technology Stack
+
+Frontend:
+--------
+HTML
+CSS
+JavaScript
+
+Backend:
+-------
+Node.js
+Express.js
+
+Database:
+--------
+MySQL
+------------------------------------------------
+Authentication
+
+Secure user signup & login
+Progress saved per account
+------------------------------------------------
+Project Structure (Planned)
+
+/idle-rpm
+│── /public
+│ ├── /css
+│ ├── /js
+│ └── /assets
+│── /routes
+│── /controllers
+│── /models
+│── /views
+│── server.js
+│── package.json
+│── README.md
+│── license.md
+------------------------------------------------
+Contributors
+
+Karter Mendenhall
+Jacob Taylor
+Gavin Fidler
+------------------------------------------------
+License
+
+© 2026 Karter Mendenhall, Jacob Taylor, Gavin Fidler - IDLE RPM. All rights reserved.
+This software and its source code are proprietary. No part of this project may be copied, modified, distributed, or used for commercial purposes without explicit permission from the authors.
+
+
+----------------------------------------------
+🏎️ IDLE RPM — Click. Upgrade. Race. Repeat. |  
+
