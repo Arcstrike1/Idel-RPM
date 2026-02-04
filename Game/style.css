@@ -1,0 +1,45 @@
+#gameWheel {
+    transition: .25s ease all;
+    width: 200px;
+    border-radius: 100%;
+    position: relative;
+}
+
+#gameWheel:hover {
+    transition: .5s ease all;
+    width: 250px;
+}
+
+#smokeSpace{
+    width:fit-content;
+    height: fit-content;
+}
+
+.smoke {
+    position: relative;
+    top:-5px;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background: rgba(128, 128, 128, 0.7);
+    border-radius: 50%;
+    animation: rise 2s linear infinite, fade 2s linear infinite;
+}
+
+@keyframes rise {
+    0% {
+        transform: translate(-50%, 0) scale(1);
+    }
+    100% {
+        transform: translate(-50%, -100px) scale(0.5);
+    }
+}
+
+@keyframes fade {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
