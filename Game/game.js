@@ -4,7 +4,7 @@ const game ={
     // rubber per click
     // multipliers
     // timers
-    state: [ rubber, rps, rpc, rmulti ],
+    state: { rubber:0, rps:0, rpc:1, rmulti:1 },
     // array or dictionary of building objects
     // each building has:
     // - name
@@ -156,19 +156,82 @@ const game ={
     // load save
     // start game loop
     init() {
-        game.state.rubber = 0;
-        game.state.rps = 1;
-        game.state.rpc = 1;
+        console.log("Initializing game state...");
+        this.state = {
+            rubber: 0,
+            rps: 1,
+            rpc: 1,
+            rmulti: 1
+        };
 
-        setInterval(function(){
-            game.state.rubber += game.state.rps;
-            document.getElementById("rubber-count").innerText=Math.floor(game.state.rubber);
-        },1000);
+        this.startTickLoop();
 
-        function clickWheel(){
-            game.state.rubber += game.state.rpc;
-            document.getElementById("rubber-count").innerText = Math.floor(game.state.rubber);
+        const wheel = document.getElementById("gameWheel");
+        if(wheel) wheel.addEventListener("click", this.clickWheel.bind(this));
+    },
+    // calculate total RPS from buildings and modifiers
+    calculateTotalRPS() {
+        let total = 0;
+        for (const b of this.buildings) {
+            total += (b.baseRPS ) * (b.count );
         }
+
+        // apply upgrade multipliers
+        let multiplier = 1;
+        for (const up of this.upgrades) {
+            if (up.purchased && up.rpsMultiplier) multiplier = up.rpsMultiplier;
+        }
+
+        // apply active buffs
+        for (const buff of this.buffs) {
+            if (buff.type === 'rps') multiplier= buff.multiplier;
+            if (buff.type === 'global') multiplier = buff.multiplier;
+        }
+
+        // global state multiplier (e.g., prestige)
+        multiplier= (this.state.rmulti || 1);
+
+        return total * multiplier;
+    },
+    // Calculate total RPC (Rubber Per Click) from base value, upgrades, and buffs
+    calculateTotalRPC() {
+        let totalRPC = this.state.rpc; // Base RPC
+
+        // Apply upgrade effects
+        for (const up of this.upgrades) {
+            if (up.purchased && up.rpcMultiplier) {
+                totalRPC *= up.rpcMultiplier;
+            }
+        }
+
+        // Apply active buffs
+        for (const buff of this.buffs) {
+            if (buff.type === 'click' || buff.type === 'global') {
+                totalRPC *= buff.multiplier;
+            }
+        }
+
+        // Apply global state multiplier (e.g., prestige)
+        totalRPC *= this.state.rmulti || 1;
+
+        return totalRPC;
+    },
+    // tick loop using dt (call once in init)
+    startTickLoop() {
+        this._lastTick = Date.now();
+        setInterval(() => {
+            const now = Date.now();
+            const dt = (now - this._lastTick) / 1000; // seconds
+            this._lastTick = now;
+
+            const totalRPS = this.calculateTotalRPS();
+            this.state.rubber += totalRPS * dt;
+
+            // update UI
+            const el = document.getElementById('rubber-count');
+            if (el) el.innerText = Math.floor(this.state.rubber);
+
+        }, 100); // 100ms tick for smooth fractional accumulation
     },
     // runs every frame or tick
     // handles:
@@ -177,7 +240,7 @@ const game ={
     // - minigame updates
     // - unlock checks
     update() {
-        for (const upgrade of Game.upgrades) {
+        for (const upgrade of this.upgrades) {
             if (!upgrade.unlocked && upgrade.unlockCondition()) {
                 upgrade.unlocked = true;
             }
@@ -218,47 +281,45 @@ const game ={
     // formatting numbers
     // random helpers
     // math helpers
-    utils: {}
-};
+    utils: {},
 
-function clickWheel() {
-    const wheel = document.getElementById("gameWheel");
+    clickWheel() {
+        if (!this.state) {
+        console.error("Game state is not initialized.");
+        return;
+    }
+        const wheel = document.getElementById("gameWheel");
 
-    // Spin the wheel
-    wheel.style.transition = "transform 0.5s ease";
-    wheel.style.transform += "rotate(360deg)";
+        // Spin the wheel
+        wheel.style.transition = "transform 0.5s ease";
+        wheel.style.transform += "rotate(360deg)";
 
-    // Create smoke effect
-    const smoke = document.createElement("div");
-    smoke.classList.add("smoke");
+        // Create smoke effect
+        const smoke = document.createElement("div");
+        smoke.classList.add("smoke");
 
-    // Position the smoke behind the wheel
-    const wheelRect = wheel.getBoundingClientRect();
-    smoke.style.position = "absolute";
-    smoke.style.left = `${wheelRect.left + wheelRect.width / 3.5}px`;
-    smoke.style.top = `${wheelRect.top + wheelRect.height / 2}px`;
-    smoke.style.transform = "translate(-50%, -50%)";
+        // Position the smoke behind the wheel
+        const wheelRect = wheel.getBoundingClientRect();
+        smoke.style.position = "absolute";
+        smoke.style.left = `${wheelRect.left + wheelRect.width / 3.5}px`;
+        smoke.style.top = `${wheelRect.top + wheelRect.height / 2}px`;
+        smoke.style.transform = "translate(-50%, -50%)";
 
-    // Append smoke to the smoke space
-    const smokeSpace = document.getElementById("smokeSpace");
-    smokeSpace.appendChild(smoke);
+        // Append smoke to the smoke space
+        const smokeSpace = document.getElementById("smokeSpace");
+        smokeSpace.appendChild(smoke);
 
-    // Remove smoke after animation
-    setTimeout(() => {
-        smoke.remove();
-    }, 2000);
+        // Remove smoke after animation
+        setTimeout(() => {
+            smoke.remove();
+        }, 2000);
 
-    // Increment rubber count
-    game.state.rubber += game.state.rpc;
-    document.getElementById("rubber-count").innerText = Math.floor(game.state.rubber);
-}
-
-// Bind the click event to the wheel
-window.onload = function() {
-    const wheel = document.getElementById("gameWheel");
-    if (wheel) {
-        wheel.addEventListener("click", clickWheel);
+        // Increment rubber count
+        this.state.rubber += this.calculateTotalRPC();
+        document.getElementById("rubber-count").innerText = Math.floor(this.state.rubber);
     }
 };
 
-//game.init();
+window.onload = function() {
+    game.init();
+};
